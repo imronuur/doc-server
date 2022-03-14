@@ -4,7 +4,7 @@ const PORT = process.env.PORT || 8000;
 const connectToMongoDB = require("./config/DB");
 const server = http.createServer(app);
 
-connectToMongoDB();
+// connectToMongoDB();
 
 const startServer = async () => {
   server.listen(PORT, () => {
