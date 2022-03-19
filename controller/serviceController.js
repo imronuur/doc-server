@@ -85,6 +85,7 @@ const transporter = nodemailer.createTransport({
 
 exports.sendEmail = async (req, res) => {
   const { user } = req.body;
+  console.log(user);
   try {
     const emailSent = await transporter.sendMail({
       from: `${(user.firstName, user.lastName || user.fullName)}`,
