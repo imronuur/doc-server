@@ -2,27 +2,89 @@ const Product = require("../models/product");
 const User = require("../models/user");
 const slugify = require("slugify");
 
-exports.create = async (req, res) => {
+exports.createOrUpdateProduct = async (req, res) => {
   try {
-    req.body.slug = slugify(req.body.name);
-    const newProduct = await new Product(req.body).save();
-    res.json(newProduct);
+    const {
+      name,
+      description,
+      regularPrice,
+      salePrice,
+      category,
+      subCategories,
+      quantity,
+      sold,
+      images,
+      inStock,
+      shipping,
+      brand,
+      size,
+      slug,
+    } = req.body.product;
+    const product = await Product.findOneAndUpdate(
+      { slug },
+      {
+        slug: slugify(name),
+        name,
+        description,
+        regularPrice,
+        salePrice,
+        category,
+        subCategories,
+        quantity,
+        sold,
+        images,
+        inStock,
+        shipping,
+        brand,
+        size,
+      },
+      { new: true }
+    );
+    if (product) {
+      res.json(product);
+    } else {
+      const newProduct = await new Product({
+        slug: slugify(name),
+        name,
+        description,
+        regularPrice,
+        salePrice,
+        category,
+        subCategories,
+        quantity,
+        sold,
+        images,
+        inStock,
+        shipping,
+        brand,
+        size,
+      }).save();
+      res.json(newProduct);
+    }
   } catch (err) {
-    console.log(err);
-    res.status(400).json({
-      err: err.message,
-    });
+    res.status(400).send("Create product failed");
   }
 };
 
-exports.listAll = async (req, res) => {
-  let products = await Product.find({})
-    .limit(parseInt(req.params.count))
+exports.list = async (req, res) => {
+  const { page } = req.query;
+  const LIMIT = 5;
+  const startIndex = Number(page) * LIMIT;
+  const total = await Product.countDocuments({});
+
+  const products = await Product.find({})
+    .sort({ createdAt: -1 })
+    .limit(LIMIT)
+    .skip(startIndex)
     .populate("category")
     .populate("subCategories")
-    .sort([["createdAt", "desc"]])
     .exec();
-  res.json(products);
+
+  res.json({
+    data: products,
+    currentPage: Number(page),
+    numberOfPages: Math.ceil(total / LIMIT),
+  });
 };
 
 exports.remove = async (req, res) => {
@@ -45,20 +107,56 @@ exports.read = async (req, res) => {
   res.json(product);
 };
 
-exports.update = async (req, res) => {
-  try {
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title);
-    }
-    const updated = await Product.findOneAndUpdate(
-      { slug: req.params.slug },
-      req.body,
-      { new: true }
-    ).exec();
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({
-      err: err.message,
+exports.bulkProduct = async (req, res) => {
+  let bulkProducts = [];
+
+  req.body.products.forEach((element) => {
+    const {
+      name,
+      description,
+      regularPrice,
+      salePrice,
+      category,
+      subCategories,
+      quantity,
+      sold,
+      images,
+      inStock,
+      shipping,
+      brand,
+      size,
+    } = element;
+    bulkProducts.push({
+      name,
+      slug: slugify(name),
+      description,
+      regularPrice,
+      salePrice,
+      category,
+      subCategories,
+      quantity,
+      sold,
+      images,
+      inStock,
+      shipping,
+      brand,
+      size,
     });
+  });
+
+  try {
+    const newBulkProducts = await Product.insertMany(bulkProducts);
+    res.status(201).send(newBulkProducts);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
+
+exports.deleteMany = async (req, res) => {
+  try {
+    await Product.deleteMany({ _id: req.body.ids });
+    res.status(200).send({ message: "Deleted Many Products!" });
+  } catch (error) {
+    res.status(400).send(error.message);
   }
 };

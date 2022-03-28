@@ -3,19 +3,20 @@ const router = express.Router();
 
 // controller
 const {
-  create,
-  listAll,
+  createOrUpdateProduct,
+  list,
   remove,
   read,
-  update,
+  deleteMany,
+  bulkProduct,
 } = require("../controller/productController");
 
 // routes
-router.post("/product", create);
-router.get("/products/:count", listAll); 
+router.post("/product", createOrUpdateProduct);
+router.get("/products", list);
 router.delete("/product/:slug", remove);
 router.get("/product/:slug", read);
-router.put("/product/:slug", update);
-
+router.post("/bulk-product", bulkProduct);
+router.post("/product-delete-many", deleteMany);
 
 module.exports = router;

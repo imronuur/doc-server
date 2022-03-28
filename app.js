@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
-    methods: ["POST", "GET"],
+    methods: ["POST", "GET", "DELETE"],
   })
 );
 app.use(morgran("combined"));
