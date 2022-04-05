@@ -9,11 +9,14 @@ const {
   remove,
   list,
   deleteMany,
+  listAll,
 } = require("../controller/subCategoryController");
 
 // routes
 router.post("/sub-category", createOrUpdateSubCategory);
 router.get("/sub-categories", list);
+router.get("/sub-categories/list-all", listAll);
+
 router.get("/sub-category/:slug", read);
 router.put("/sub-category/:slug", update);
 router.delete("/sub-category/:slug", remove);

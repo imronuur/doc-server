@@ -30,6 +30,13 @@ exports.createOrUpdateSubCategory = async (req, res) => {
   }
 };
 
+exports.listAll = async (req, res) => {
+  let subCategories = await Sub.find({})
+    .sort([["createdAt", "desc"]])
+    .exec();
+  res.json(subCategories);
+};
+
 exports.list = async (req, res) => {
   const { page } = req.query;
   const LIMIT = 5;

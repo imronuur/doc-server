@@ -51,10 +51,7 @@ const productSchema = new mongoose.Schema(
     },
     images: [],
     inStock: Boolean,
-    shipping: {
-      type: String,
-      enum: ["Yes", "No"],
-    },
+    shipping: Boolean,
     brand: {
       type: String,
       enum: [],

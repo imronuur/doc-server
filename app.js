@@ -15,7 +15,7 @@ app.use(
     methods: ["POST", "GET", "DELETE"],
   })
 );
-app.use(morgran("combined"));
+app.use(morgran("dev"));
 
 readdirSync(path.join(__dirname, "routes")).map((route) =>
   app.use("/api", require(path.join(__dirname, "routes/" + route)))

@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Category = require("../models/category");
 const User = require("../models/user");
 const slugify = require("slugify");
 
@@ -62,6 +63,7 @@ exports.createOrUpdateProduct = async (req, res) => {
       res.json(newProduct);
     }
   } catch (err) {
+    console.log(err);
     res.status(400).send("Create product failed");
   }
 };
@@ -116,29 +118,18 @@ exports.bulkProduct = async (req, res) => {
       description,
       regularPrice,
       salePrice,
-      category,
-      subCategories,
       quantity,
-      sold,
-      images,
-      inStock,
-      shipping,
       brand,
       size,
     } = element;
+
     bulkProducts.push({
       name,
       slug: slugify(name),
       description,
       regularPrice,
       salePrice,
-      category,
-      subCategories,
       quantity,
-      sold,
-      images,
-      inStock,
-      shipping,
       brand,
       size,
     });
