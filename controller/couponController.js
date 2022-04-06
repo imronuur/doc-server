@@ -45,3 +45,21 @@ exports.list = async (req, res) => {
     numberOfPages: Math.ceil(total / LIMIT),
   });
 };
+
+exports.remove = async (req, res) => {
+  try {
+    const deleted = await Coupon.findOneAndDelete({ _id: req.params._id });
+    res.json(deleted);
+  } catch (err) {
+    res.status(400).send("Coupon delete failed");
+  }
+};
+
+exports.deleteMany = async (req, res) => {
+  try {
+    await Coupon.deleteMany({ _id: req.body.ids });
+    res.status(200).send({ message: "Deleted Many Coupon Codes!" });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
