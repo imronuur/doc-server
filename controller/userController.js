@@ -23,6 +23,21 @@ exports.readUser = async (req, res) => {
   }
 };
 
+exports.loginUser = async (req, res) => {
+  try {
+    const { email } = req.user;
+    const { authorization } = req.headers;
+    const user = await Users.findOne({ email });
+    if (user) {
+      res.json({ user, accessToken: authorization });
+    } else {
+      res.status(401).json("User Not Found");
+    }
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
 exports.createOrUpdateUser = async (req, res) => {
   try {
     const { email } = req.user;
