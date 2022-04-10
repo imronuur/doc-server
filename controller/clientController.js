@@ -1,14 +1,21 @@
 const Client = require("../models/clients");
 
 exports.getClients = async (req, res) => {
-  try {
-    const clients = await Client.find({});
-    res.json({
-      clients,
-    });
-  } catch (error) {
-    res.status(400).json(error.message);
-  }
+  const { page } = req.query;
+  const LIMIT = 5;
+  const startIndex = Number(page) * LIMIT;
+  const total = await Client.countDocuments({});
+
+  const clients = await Client.find({})
+    .sort({ createdAt: -1 })
+    .limit(LIMIT)
+    .skip(startIndex);
+
+  res.json({
+    data: clients,
+    currentPage: Number(page),
+    numberOfPages: Math.ceil(total / LIMIT),
+  });
 };
 
 exports.readClient = async (req, res) => {

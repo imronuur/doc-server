@@ -25,17 +25,19 @@ exports.readUser = async (req, res) => {
 
 exports.createOrUpdateUser = async (req, res) => {
   try {
-    const { _id, name, phone, email, about } = req.body.user;
+    const { email } = req.user;
+    const { name } = req.body;
+    const { authorization } = req.headers;
     const user = await Users.findOneAndUpdate(
-      { _id },
-      { name, phone, email, about },
+      { email },
+      { name, email },
       { new: true }
     );
     if (user) {
-      res.json(user);
+      res.json({ user, accessToken: authorization });
     } else {
-      const newUser = await new Users(req.body.user).save();
-      res.json(newUser);
+      const newUser = await new Users(req.user).save();
+      res.json({ user: newUser, accessToken: authorization });
     }
   } catch (error) {
     res.status(400).json(error.message);
