@@ -67,3 +67,15 @@ exports.deleteUser = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+
+exports.saveAddress = async (req, res) => {
+  try {
+    const updatedAddress = await Users.findOneAndUpdate(
+      { email: req.user.email },
+      { address: req.body.address }
+    );
+    res.json(updatedAddress);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
