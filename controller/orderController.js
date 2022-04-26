@@ -2,40 +2,66 @@ const Order = require("../models/order");
 const Product = require("../models/product");
 
 exports.createOrder = async (req, res) => {
-  const { orderBy, orderTo, products, orderInfo, address } = req.body.order;
+  try {
+    const { orderBy, orderTo, products, orderInfo, address } = req.body.order;
 
-  let newOrder = await new Order({
-    products,
-    orderInfo,
-    orderBy,
-    orderTo,
-    address,
-  }).save();
+    let newOrder = await new Order({
+      products,
+      orderInfo,
+      orderBy,
+      orderTo,
+      address,
+    }).save();
 
-  let bulkOption = products.map((item) => {
-    return {
-      updateOne: {
-        filter: { _id: item.product },
-        update: { $inc: { quantity: -item.count, sold: +item.count } },
-      },
-    };
-  });
+    let bulkOption = products.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product },
+          update: { $inc: { quantity: -item.count, sold: +item.count } },
+        },
+      };
+    });
 
-  await Product.bulkWrite(bulkOption, {});
+    await Product.bulkWrite(bulkOption, {});
 
-  res.json(newOrder);
+    res.json(newOrder);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 };
 
 exports.listAllOrders = async (req, res) => {
-  const allOrders = await Order.find({}).populate("products.product").exec();
-  res.json(allOrders);
+  try {
+    const allOrders = await Order.find({}).populate("products.product").exec();
+    res.json(allOrders);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 };
 exports.getUserOrders = async (req, res) => {
-  const userOrders = await Order.find({ orderBy: req.params._id })
-    .populate("products.product")
-    .exec();
+  try {
+    const userOrders = await Order.find({ orderBy: req.params._id })
+      .populate("products.product")
+      .exec();
 
-  res.json(userOrders);
+    res.json(userOrders);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
+exports.updateOrderStatus = async (req, res) => {
+  const { orderId, orderStatus } = req.body.status;
+  try {
+    const updated = await Order.findByIdAndUpdate(
+      orderId,
+      { orderStatus },
+      { new: true }
+    ).exec();
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
 };
 
 // exports.createCashOrder = async (req, res) => {
