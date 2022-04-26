@@ -21,15 +21,6 @@ const InvoiceSchema = mongoose.Schema(
     creator: String,
     refTo: String,
     totalAmountReceived: Number,
-    paymentRecords: [
-      {
-        amountPaid: Number,
-        datePaid: Date,
-        paymentMethod: String,
-        note: String,
-        paidBy: String,
-      },
-    ],
   },
   { timestamps: true }
 );
