@@ -28,6 +28,7 @@ const orderSchema = new mongoose.Schema(
     },
     orderBy: { type: ObjectId, ref: "User" },
     orderTo: { type: ObjectId, ref: "Client" },
+    paymentType: String,
   },
   { timestamps: true }
 );
