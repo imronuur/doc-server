@@ -31,13 +31,25 @@ exports.createOrder = async (req, res) => {
 };
 
 exports.listAllOrders = async (req, res) => {
-  try {
-    const allOrders = await Order.find({}).populate("products.product").exec();
-    res.json(allOrders);
-  } catch (error) {
-    res.status(400).json(error.message);
-  }
+  const { page } = req.query;
+  const LIMIT = 5;
+  const startIndex = Number(page) * LIMIT;
+  const total = await Order.countDocuments({});
+
+  const orders = await Order.find({})
+    .populate("products.product")
+    .sort({ createdAt: -1 })
+    .limit(LIMIT)
+    .skip(startIndex)
+    .exec();
+
+  res.json({
+    data: orders,
+    currentPage: Number(page),
+    numberOfPages: Math.ceil(total / LIMIT),
+  });
 };
+
 exports.getUserOrders = async (req, res) => {
   try {
     const userOrders = await Order.find({ orderBy: req.params._id })
@@ -52,9 +64,10 @@ exports.getUserOrders = async (req, res) => {
 
 exports.updateOrderStatus = async (req, res) => {
   const { orderId, orderStatus } = req.body.status;
+
   try {
     const updated = await Order.findByIdAndUpdate(
-      orderId,
+      { _id: orderId },
       { orderStatus },
       { new: true }
     ).exec();
@@ -64,6 +77,22 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
+exports.remove = async (req, res) => {
+  try {
+    const deleted = await Order.findOneAndDelete({ _id: req.params._id });
+    res.json(deleted);
+  } catch (err) {
+    res.status(400).send("Order delete failed");
+  }
+};
+exports.deleteMany = async (req, res) => {
+  try {
+    await Order.deleteMany({ _id: req.body.ids });
+    res.status(200).send({ message: "Deleted Many Orders!" });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
 // exports.createCashOrder = async (req, res) => {
 //   const { COD, couponApplied } = req.body;
 //   // if COD is true, create order with status of Cash On Delivery
