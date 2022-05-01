@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Schema;
 
 const InvoiceSchema = mongoose.Schema(
   {
@@ -19,7 +20,7 @@ const InvoiceSchema = mongoose.Schema(
     invoiceNumber: String,
     type: String,
     creator: String,
-    refTo: String,
+    refTo: { type: ObjectId, ref: "Client" },
     totalAmountReceived: Number,
   },
   { timestamps: true }

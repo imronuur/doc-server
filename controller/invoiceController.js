@@ -65,6 +65,7 @@ exports.list = async (req, res) => {
 
   const invoices = await Invoice.find({})
     .sort({ createdAt: -1 })
+    .populate("refTo")
     .limit(LIMIT)
     .skip(startIndex)
     .exec();
