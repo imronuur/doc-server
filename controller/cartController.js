@@ -17,7 +17,7 @@ exports.addItemToCart = async (req, res) => {
     if (cart) {
       //---- Check if index exists ----
       const indexFound = cart.items.findIndex(
-        (item) => item.productId === productId
+        (item) => item.productId._id == productId
       );
       //------This removes an item from the the cart if the quantity is set to zero, We can use this method to remove an item from the list  -------
       if (indexFound !== -1 && quantity <= 0) {
