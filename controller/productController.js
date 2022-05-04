@@ -87,6 +87,26 @@ exports.list = async (req, res) => {
   });
 };
 
+exports.listAll = async (req, res) => {
+  try {
+    const products = await Product.find({})
+      .sort({ createdAt: -1 })
+      .populate("category")
+      .populate("subCategories")
+      .exec();
+
+    res.json({
+      data: products,
+      status: 200,
+    });
+  } catch (error) {
+    res.json({
+      error: error.message,
+      status: 400,
+    });
+  }
+};
+
 exports.remove = async (req, res) => {
   try {
     const deleted = await Product.findOneAndRemove({

@@ -6,12 +6,10 @@ const superOfferSchema = new mongoose.Schema(
     title: String,
     subTitle: String,
     price: Number,
-    image: String,
     product: {
       type: ObjectId,
       ref: "Product",
     },
-    dateCreated: Date,
     expiryDate: Date,
   },
   { timestamps: true }

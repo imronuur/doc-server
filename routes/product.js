@@ -9,11 +9,13 @@ const {
   read,
   deleteMany,
   bulkProduct,
+  listAll,
 } = require("../controller/productController");
 
 // routes
 router.post("/product", createOrUpdateProduct);
 router.get("/products", list);
+router.get("/get-all-products", listAll);
 router.delete("/product/:slug", remove);
 router.get("/product/:slug", read);
 router.post("/bulk-product", bulkProduct);

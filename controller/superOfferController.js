@@ -46,6 +46,7 @@ exports.list = async (req, res) => {
 
   const offers = await Offer.find({})
     .sort({ createdAt: -1 })
+    .populate("product")
     .limit(LIMIT)
     .skip(startIndex)
     .exec();
