@@ -61,6 +61,7 @@ const productSchema = new mongoose.Schema(
       {
         rating: Number,
         comment: String,
+        date: Date,
         postedBy: { type: ObjectId, ref: "User" },
       },
     ],

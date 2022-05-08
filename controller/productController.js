@@ -1,4 +1,6 @@
 const Product = require("../models/product");
+const User = require("../models/user");
+
 const slugify = require("slugify");
 
 exports.createOrUpdateProduct = async (req, res) => {
@@ -77,6 +79,7 @@ exports.list = async (req, res) => {
     .limit(LIMIT)
     .skip(startIndex)
     .populate("category")
+    .populate("review.postedBy")
     .populate("subCategories")
     .exec();
 
@@ -93,6 +96,7 @@ exports.listAll = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("category")
       .populate("subCategories")
+      .populate("postedBy")
       .exec();
 
     res.json({
@@ -206,7 +210,7 @@ exports.listTopRatedProducts = async (req, res) => {
 
 exports.productRating = async (req, res) => {
   const product = await Product.findById(req.params._id).exec();
-  const { _id, rating, comment } = req.body;
+  const { _id, rating, comment, date } = req.body;
   const user = await User.findOne({ _id }).exec();
 
   let existingRatingObject = product.review.find(
@@ -218,7 +222,7 @@ exports.productRating = async (req, res) => {
     let ratingAdded = await Product.findByIdAndUpdate(
       product._id,
       {
-        $push: { review: { rating, postedBy: user._id, comment } },
+        $push: { review: { rating, postedBy: user._id, comment, date } },
       },
       { new: true }
     ).exec();
@@ -230,7 +234,13 @@ exports.productRating = async (req, res) => {
       {
         review: { $elemMatch: existingRatingObject },
       },
-      { $set: { "review.$.rating": rating, "review.$.comment": comment } },
+      {
+        $set: {
+          "review.$.rating": rating,
+          "review.$.comment": comment,
+          "review.$.date": date,
+        },
+      },
       { new: true }
     ).exec();
     console.log("ratingUpdated", ratingUpdated);
