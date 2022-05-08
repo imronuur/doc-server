@@ -57,9 +57,10 @@ const productSchema = new mongoose.Schema(
       enum: [],
     },
     size: [],
-    ratings: [
+    review: [
       {
-        star: Number,
+        rating: Number,
+        comment: String,
         postedBy: { type: ObjectId, ref: "User" },
       },
     ],

@@ -120,7 +120,7 @@ exports.remove = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
-  const product = await Product.findOne({ slug: req.params.slug })
+  const product = await Product.findOne({ _id: req.params._id })
     .populate("category")
     .populate("subCategories")
     .exec();
@@ -150,6 +150,9 @@ exports.bulkProduct = async (req, res) => {
       quantity,
       brand,
       size,
+      images: [
+        "https://firebasestorage.googleapis.com/v0/b/silicon-ecom.appspot.com/o/cubes.png?alt=media&token=1de750b8-f99f-4e29-b218-82f900c71174",
+      ],
     });
   });
 
@@ -167,5 +170,70 @@ exports.deleteMany = async (req, res) => {
     res.status(200).send({ message: "Deleted Many Products!" });
   } catch (error) {
     res.status(400).send(error.message);
+  }
+};
+
+exports.listHighDiscountProducts = async (req, res) => {
+  try {
+    await Product.find({}).sort();
+    res.status(200).send({ message: "Deleted Many Products!" });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.listNewestProducts = async (req, res) => {
+  try {
+    const newProducts = await Product.find({})
+      .sort({ createdAt: -1 })
+      .limit(6)
+      .exec();
+    res.status(200).send(newProducts);
+    console.log(newProducts.length);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.listTopRatedProducts = async (req, res) => {
+  try {
+    await Product.deleteMany({ _id: req.body.ids });
+    res.status(200).send({ message: "Deleted Many Products!" });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.productRating = async (req, res) => {
+  const product = await Product.findById(req.params._id).exec();
+  const { _id, rating, comment } = req.body;
+  const user = await User.findOne({ _id }).exec();
+
+  let existingRatingObject = product.review.find(
+    (ele) => ele.postedBy.toString() === user._id.toString()
+  );
+
+  // if user haven't left rating yet, push it
+  if (existingRatingObject === undefined) {
+    let ratingAdded = await Product.findByIdAndUpdate(
+      product._id,
+      {
+        $push: { review: { rating, postedBy: user._id, comment } },
+      },
+      { new: true }
+    ).exec();
+    console.log("ratingAdded", ratingAdded);
+    res.json(ratingAdded);
+  } else {
+    // if user have already left rating, update it
+    const ratingUpdated = await Product.updateOne(
+      {
+        review: { $elemMatch: existingRatingObject },
+      },
+      { $set: { "review.$.rating": rating, "review.$.comment": comment } },
+      { new: true }
+    ).exec();
+    console.log("ratingUpdated", ratingUpdated);
+    res.json(ratingUpdated);
   }
 };

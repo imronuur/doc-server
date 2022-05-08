@@ -43,6 +43,11 @@ exports.list = async (req, res) => {
   });
 };
 
+exports.listAll = async (req, res) => {
+  const brands = await Brand.find({}).sort({ createdAt: -1 }).exec();
+  res.json(brands);
+};
+
 exports.remove = async (req, res) => {
   try {
     const deleted = await Brand.findOneAndRemove({
