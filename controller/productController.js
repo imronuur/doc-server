@@ -96,7 +96,7 @@ exports.listAll = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("category")
       .populate("subCategories")
-      .populate("postedBy")
+      .populate("review.postedBy")
       .exec();
 
     res.json({
@@ -126,6 +126,7 @@ exports.remove = async (req, res) => {
 exports.read = async (req, res) => {
   const product = await Product.findOne({ _id: req.params._id })
     .populate("category")
+    .populate("review.postedBy")
     .populate("subCategories")
     .exec();
   res.json(product);
@@ -201,7 +202,7 @@ exports.listNewestProducts = async (req, res) => {
 
 exports.listTopRatedProducts = async (req, res) => {
   try {
-    await Product.deleteMany({ _id: req.body.ids });
+    await Product.find({ review: req.body.ids });
     res.status(200).send({ message: "Deleted Many Products!" });
   } catch (error) {
     res.status(400).send(error.message);
@@ -209,41 +210,65 @@ exports.listTopRatedProducts = async (req, res) => {
 };
 
 exports.productRating = async (req, res) => {
-  const product = await Product.findById(req.params._id).exec();
-  const { _id, rating, comment, date } = req.body;
-  const user = await User.findOne({ _id }).exec();
+  try {
+    const product = await Product.findById(req.params._id).exec();
+    const { _id, rating, comment, date } = req.body;
+    const user = await User.findOne({ _id }).exec();
 
-  let existingRatingObject = product.review.find(
-    (ele) => ele.postedBy.toString() === user._id.toString()
-  );
+    let existingRatingObject = product.review.find(
+      (ele) => ele.postedBy.toString() === user._id.toString()
+    );
 
-  // if user haven't left rating yet, push it
-  if (existingRatingObject === undefined) {
-    let ratingAdded = await Product.findByIdAndUpdate(
-      product._id,
-      {
-        $push: { review: { rating, postedBy: user._id, comment, date } },
-      },
-      { new: true }
-    ).exec();
-    console.log("ratingAdded", ratingAdded);
-    res.json(ratingAdded);
-  } else {
-    // if user have already left rating, update it
-    const ratingUpdated = await Product.updateOne(
-      {
-        review: { $elemMatch: existingRatingObject },
-      },
-      {
-        $set: {
-          "review.$.rating": rating,
-          "review.$.comment": comment,
-          "review.$.date": date,
+    // if user haven't left rating yet, push it
+    if (existingRatingObject === undefined) {
+      let ratingAdded = await Product.findByIdAndUpdate(
+        product._id,
+        {
+          $push: { review: { rating, postedBy: user._id, comment, date } },
         },
-      },
-      { new: true }
-    ).exec();
-    console.log("ratingUpdated", ratingUpdated);
-    res.json(ratingUpdated);
+        { new: true }
+      ).exec();
+      console.log("ratingAdded", ratingAdded);
+      res.json(ratingAdded);
+    } else {
+      // if user have already left rating, update it
+      const ratingUpdated = await Product.updateOne(
+        {
+          review: { $elemMatch: existingRatingObject },
+        },
+        {
+          $set: {
+            "review.$.rating": rating,
+            "review.$.comment": comment,
+            "review.$.date": date,
+          },
+        },
+        { new: true }
+      ).exec();
+      console.log("ratingUpdated", ratingUpdated);
+      res.json(ratingUpdated);
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.listRelated = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.productId).exec();
+
+    const related = await Product.find({
+      _id: { $ne: product._id },
+      category: product.category,
+    })
+      .limit(3)
+      .populate("category")
+      .populate("subs")
+      .populate("review.postedBy")
+      .exec();
+
+    res.json(related);
+  } catch (error) {
+    res.status(400).send(error.message);
   }
 };
