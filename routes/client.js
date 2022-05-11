@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const { authCheck, checkPermissions } = require("../middleware/auth");
+
 const {
   getClients,
   createOrUpdateClient,
@@ -7,10 +9,36 @@ const {
   deleteMany,
 } = require("../controller/clientController");
 
-router.get("/clients", getClients);
-router.post("/client", createOrUpdateClient);
-router.get("/client/:_id", readClient);
-router.delete("/client/:_id", deleteClient);
-router.post("/client-delete-many", deleteMany);
+// Private APIs
+router.get(
+  "/clients",
+  authCheck,
+  checkPermissions("canListClients"),
+  getClients
+);
+router.post(
+  "/client",
+  authCheck,
+  checkPermissions("canCreateOrUpdateClient"),
+  createOrUpdateClient
+);
+router.get(
+  "/client/:_id",
+  authCheck,
+  checkPermissions("canSeeClientOrders"),
+  readClient
+);
+router.delete(
+  "/client/:_id",
+  authCheck,
+  checkPermissions("canDeleteClient"),
+  deleteClient
+);
+router.post(
+  "/client-delete-many",
+  authCheck,
+  checkPermissions("canDeleteMultiClients"),
+  deleteMany
+);
 
 module.exports = router;

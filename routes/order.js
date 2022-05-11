@@ -9,14 +9,37 @@ const {
   deleteMany,
 } = require("../controller/orderController");
 
-const { authCheck } = require("../middleware/auth");
+const { authCheck, checkPermissions } = require("../middleware/auth");
 
-router.post("/order", createOrder);
-// router.post("/cash-order", authCheck, createCashOrder);
-router.get("/orders", listAllOrders);
+// User APIs
+router.post("/order", authCheck, createOrder);
 router.get("/my-orders", authCheck, getUserOrders);
-router.post("/update-order-status", updateOrderStatus);
-router.delete("/order/:_id", remove);
-router.post("/orders-delete-many", deleteMany);
+// router.post("/cash-order", authCheck, createCashOrder);
+
+// Private APIs
+router.get(
+  "/orders",
+  authCheck,
+  checkPermissions("canListAllOrders"),
+  listAllOrders
+);
+router.post(
+  "/update-order-status",
+  authCheck,
+  checkPermissions("canUpdateOrderStatus"),
+  updateOrderStatus
+);
+router.delete(
+  "/order/:_id",
+  authCheck,
+  checkPermissions("canDeleteOrder"),
+  remove
+);
+router.post(
+  "/orders-delete-many",
+  authCheck,
+  checkPermissions("canDeleteMultiOrders"),
+  deleteMany
+);
 
 module.exports = router;

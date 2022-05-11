@@ -1,10 +1,22 @@
 const Users = require("../models/user");
+const { defaultAuth } = require("../firebase/");
 
 exports.getUsers = async (req, res) => {
   try {
-    const users = await Users.find({});
+    const { page } = req.query;
+    const LIMIT = 5;
+    const startIndex = Number(page) * LIMIT;
+    const total = await Users.countDocuments({});
+
+    const users = await Users.find({})
+      .sort({ createdAt: -1 })
+      .limit(LIMIT)
+      .skip(startIndex)
+      .exec();
     res.json({
-      users,
+      data: users,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(total / LIMIT),
     });
   } catch (error) {
     res.status(400).json(error.message);
@@ -60,9 +72,64 @@ exports.createOrUpdateUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
+  const { email } = req.headers;
+  const notAllowedToBeDeletedRoles = ["superAdmin", "admin"];
   try {
-    const deletedUser = await Users.findOneAndDelete({ _id: req.params._id });
-    res.json(deletedUser);
+    const user = Users.findOne({ _id: req.params._id });
+
+    if (notAllowedToBeDeletedRoles.includes(user.role)) {
+      res.status(500).send({
+        message: "You can not delete Users with superAdmin or admin roles",
+      });
+    } else {
+      const { uid } = await defaultAuth.getUserByEmail(email);
+      if (uid) {
+        await defaultAuth.deleteUser(uid);
+        const deletedUser = await Users.findOneAndDelete({
+          _id: req.params._id,
+        });
+        res.json({ message: `Deleted User ${deletedUser.name}` });
+      }
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.adminAddUser = async (req, res) => {
+  try {
+    const {
+      _id,
+      name,
+      role,
+      phone,
+      email,
+      address,
+      dob,
+      gender,
+      company,
+      photo,
+    } = req.body.user;
+    const user = await Users.findOneAndUpdate(
+      { _id },
+      { name, phone, role, email, address, dob, gender, company, photo },
+      { new: true }
+    );
+    if (user) {
+      res.json(user);
+    } else {
+      const newUser = await new Users(req.body.user).save();
+      res.json(newUser);
+    }
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+
+exports.deleteMany = async (req, res) => {
+  try {
+    await Users.deleteMany({ _id: req.body.ids });
+    res.status(200).send({ message: "Deleted Many Users!" });
   } catch (error) {
     res.status(400).send(error.message);
   }

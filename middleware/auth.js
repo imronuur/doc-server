@@ -11,6 +11,7 @@ exports.authCheck = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
+    console.log(err);
     res.status(401).send(err.message);
   }
 };

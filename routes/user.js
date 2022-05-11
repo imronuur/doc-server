@@ -7,15 +7,40 @@ const {
   deleteUser,
   loginUser,
   saveAddress,
+  adminAddUser,
+  deleteMany,
 } = require("../controller/userController");
 
-const { authCheck } = require("../middleware/auth");
+const {
+  authCheck,
+  tokenCheck,
+  checkPermissions,
+} = require("../middleware/auth");
 
-router.get("/users", getUsers);
+// User APIs
 router.post("/users", authCheck, createOrUpdateUser);
+
+// Admin APIs
+router.get("/users", authCheck, checkPermissions("canListUsers"), getUsers);
+router.delete(
+  "/users/:_id",
+  authCheck,
+  checkPermissions("canDeleteUser"),
+  authCheck,
+  deleteUser
+);
+router.post(
+  "/admin-add-user",
+  authCheck,
+  checkPermissions("canCreateOrUpdateUser"),
+  authCheck,
+  adminAddUser
+);
+
+// Shared APIs
 router.post("/login-user", authCheck, loginUser);
-router.get("/users/:_id", readUser);
-router.delete("/users/:_id", deleteUser);
+router.post("/users/token-check", tokenCheck);
 router.post("/users/address", authCheck, saveAddress);
+router.get("/users/:_id", readUser);
 
 module.exports = router;

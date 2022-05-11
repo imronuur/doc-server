@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-// controller
 const {
   createOrUpdateBrands,
   list,
@@ -11,12 +10,31 @@ const {
   listAll,
 } = require("../controller/brandsController");
 
-// routes
-router.post("/brands", createOrUpdateBrands);
-router.get("/brands", list);
+const { authCheck, checkPermissions } = require("../middleware/auth");
+
+// Private APIs
+router.post(
+  "/brands",
+  authCheck,
+  checkPermissions("canCreateOrUpdateBrand"),
+  createOrUpdateBrands
+);
+router.get("/brands", authCheck, checkPermissions("canListBrands"), list);
+router.delete(
+  "/brand/:_id",
+  authCheck,
+  checkPermissions("canDeleteBrand"),
+  remove
+);
+router.post(
+  "/brands-delete-many",
+  authCheck,
+  checkPermissions("canDeleteMultiBrands"),
+  deleteMany
+);
+
+// Public APIs
 router.get("/brands-all", listAll);
-router.delete("/brand/:_id", remove);
 router.get("/brand/:_id", read);
-router.post("/brands-delete-many", deleteMany);
 
 module.exports = router;

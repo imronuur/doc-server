@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
       {
         address1: String,
         state: String,
+        city: String,
       },
     ],
     wishlist: [{ type: ObjectId, ref: "Product" }],

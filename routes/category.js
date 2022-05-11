@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const { authCheck, checkPermissions } = require("../middleware/auth");
+
 const {
   createOrUpdateCategory,
   read,
@@ -12,13 +14,37 @@ const {
   deleteMany,
 } = require("../controller/categoryController");
 
-router.post("/category", createOrUpdateCategory);
-router.get("/categories", list);
+// Private APIs
+router.post(
+  "/category",
+  authCheck,
+  checkPermissions("canCreateOrUpdateCategory"),
+  createOrUpdateCategory
+);
+router.get("/categories", authCheck, checkPermissions("canListCategory"), list);
+
+router.delete(
+  "/category/:slug",
+  authCheck,
+  checkPermissions("canDeleteCategory"),
+  remove
+);
+router.post(
+  "/bulk-category",
+  authCheck,
+  checkPermissions("canCreateBulkCategories"),
+  bulkCategory
+);
+router.post(
+  "/category-delete-many",
+  authCheck,
+  checkPermissions("canDeleteMultiCategories"),
+  deleteMany
+);
+router.get("/category/get-sub/:_id", getSubs);
+
+// Public APIs
 router.get("/categories/list-all", listAll);
 router.get("/category/:slug", read);
-router.delete("/category/:slug", remove);
-router.post("/bulk-category", bulkCategory);
-router.post("/category-delete-many", deleteMany);
-router.get("/category/get-sub/:_id", getSubs);
 
 module.exports = router;

@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-// controller
+const { authCheck, checkPermissions } = require("../middleware/auth");
+
 const {
   list,
   createOrUpdateCoupon,
@@ -9,11 +10,26 @@ const {
   deleteMany,
 } = require("../controller/couponController");
 
-// routes
-router.post("/coupon-code", createOrUpdateCoupon);
-router.get("/coupon-code", list);
-router.delete("/coupon-code/:_id", remove);
-router.post("/coupon-code-delete-many", deleteMany);
+// Private APIs
+router.post(
+  "/coupon-code",
+  authCheck,
+  checkPermissions("canCreateOrUpdateCoupon"),
+  createOrUpdateCoupon
+);
+router.get("/coupon-code", authCheck, checkPermissions("canListCoupons"), list);
+router.delete(
+  "/coupon-code/:_id",
+  authCheck,
+  checkPermissions("canDeleteCoupon"),
+  remove
+);
+router.post(
+  "/coupon-code-delete-many",
+  authCheck,
+  checkPermissions("canDeleteMultiCoupons"),
+  deleteMany
+);
 // router.post("/apply-coupon", applyCoupon);
 
 module.exports = router;

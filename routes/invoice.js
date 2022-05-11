@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-// controller
+const { authCheck, checkPermissions } = require("../middleware/auth");
+
 const {
   createOrUpdateInvoice,
   list,
@@ -9,10 +10,25 @@ const {
   deleteMany,
 } = require("../controller/invoiceController");
 
-// routes
-router.post("/invoices", createOrUpdateInvoice);
-router.get("/invoices", list);
-router.delete("/invoice/:_id", remove);
-router.post("/invoices-delete-many", deleteMany);
+// Private APIs
+router.post(
+  "/invoices",
+  authCheck,
+  checkPermissions("canCreateOrUpdateInvoice"),
+  createOrUpdateInvoice
+);
+router.get("/invoices", authCheck, checkPermissions("canListInvoices"), list);
+router.delete(
+  "/invoice/:_id",
+  authCheck,
+  checkPermissions("canDeleteInvoice"),
+  remove
+);
+router.post(
+  "/invoices-delete-many",
+  authCheck,
+  checkPermissions("canDeleteMultiInvoices"),
+  deleteMany
+);
 
 module.exports = router;

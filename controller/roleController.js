@@ -60,6 +60,11 @@ exports.readRole = async (req, res) => {
   res.json(role);
 };
 
+exports.getAllRoles = async (req, res) => {
+  const roles = await Role.find({}).sort({ createdAt: -1 }).exec();
+  res.json({ data: roles });
+};
+
 exports.addRolePermission = async (req, res) => {
   try {
     let { permissions } = req.body;

@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-// controller
+const { authCheck, checkPermissions } = require("../middleware/auth");
+
 const {
   createOrUpdateSuperOffer,
   list,
@@ -10,11 +11,28 @@ const {
   deleteMany,
 } = require("../controller/superOfferController");
 
-// routes
-router.post("/super-offer", createOrUpdateSuperOffer);
-router.get("/super-offer", list);
-router.delete("/super-offer/:_id", remove);
+// Private APIs
+router.post(
+  "/super-offer",
+  authCheck,
+  checkPermissions("canCreateOrUpdateOffer"),
+  createOrUpdateSuperOffer
+);
+router.delete(
+  "/super-offer/:_id",
+  authCheck,
+  checkPermissions("canDeleteOffer"),
+  remove
+);
+router.post(
+  "/super-offer-delete-many",
+  authCheck,
+  checkPermissions("canDeleteMultiOffers"),
+  deleteMany
+);
+
+// Public APIs
 router.get("/super-offer/:_id", read);
-router.post("/super-offer-delete-many", deleteMany);
+router.get("/super-offer", list);
 
 module.exports = router;

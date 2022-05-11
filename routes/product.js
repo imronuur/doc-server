@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { authCheck, checkPermissions } = require("../middleware/auth");
 
-// controller
 const {
   createOrUpdateProduct,
   list,
@@ -16,16 +16,39 @@ const {
   productRating,
 } = require("../controller/productController");
 
-// routes
-router.post("/product", createOrUpdateProduct);
+// Private APIs
+router.post(
+  "/product",
+  authCheck,
+  checkPermissions("canCreateOrUpdateProduct"),
+  createOrUpdateProduct
+);
+
+router.delete(
+  "/product/:slug",
+  authCheck,
+  checkPermissions("canDeleteProduct"),
+  remove
+);
+router.post("/rate-product/:_id", authCheck, productRating);
+
+router.post(
+  "/bulk-product",
+  authCheck,
+  checkPermissions("canCreateBulkProducts"),
+  bulkProduct
+);
+router.post(
+  "/product-delete-many",
+  authCheck,
+  checkPermissions("canDeleteMultiProducts"),
+  deleteMany
+);
+
+// Public APIs
 router.get("/products", list);
 router.get("/get-all-products", listAll);
-router.delete("/product/:slug", remove);
 router.get("/product/:_id", read);
-router.post("/rate-product/:_id", productRating);
-
-router.post("/bulk-product", bulkProduct);
-router.post("/product-delete-many", deleteMany);
 router.get("/highest-discouted-products", listHighDiscountProducts);
 router.get("/newest-products", listNewestProducts);
 router.get("/top-rated-products", listTopRatedProducts);
