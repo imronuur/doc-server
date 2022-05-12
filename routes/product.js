@@ -30,7 +30,6 @@ router.delete(
   checkPermissions("canDeleteProduct"),
   remove
 );
-router.post("/rate-product/:_id", authCheck, productRating);
 
 router.post(
   "/bulk-product",
@@ -44,6 +43,9 @@ router.post(
   checkPermissions("canDeleteMultiProducts"),
   deleteMany
 );
+
+// User APIs
+router.post("/rate-product/:_id", authCheck, productRating);
 
 // Public APIs
 router.get("/products", list);

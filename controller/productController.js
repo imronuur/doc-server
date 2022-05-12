@@ -118,18 +118,21 @@ exports.remove = async (req, res) => {
     }).exec();
     res.json(deleted);
   } catch (err) {
-    console.log(err);
-    return res.staus(400).send("Product delete failed");
+    return res.status(400).send("Product delete failed");
   }
 };
 
 exports.read = async (req, res) => {
-  const product = await Product.findOne({ _id: req.params._id })
-    .populate("category")
-    .populate("review.postedBy")
-    .populate("subCategories")
-    .exec();
-  res.json(product);
+  try {
+    const product = await Product.findOne({ _id: req.params._id })
+      .populate("category")
+      .populate("review.postedBy")
+      .populate("subCategories")
+      .exec();
+    res.json(product);
+  } catch (error) {
+    return res.status(400).send("Failed to read product");
+  }
 };
 
 exports.bulkProduct = async (req, res) => {
