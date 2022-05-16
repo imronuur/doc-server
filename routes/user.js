@@ -6,7 +6,9 @@ const {
   createOrUpdateUser,
   deleteUser,
   loginUser,
-  saveAddress,
+  addAddress,
+  getAddress,
+  removeAddress,
   adminAddUser,
   deleteMany,
 } = require("../controller/userController");
@@ -40,7 +42,10 @@ router.post(
 // Shared APIs
 router.post("/login-user", authCheck, loginUser);
 router.post("/users/token-check", tokenCheck);
-router.post("/users/address", authCheck, saveAddress);
+router.post("/users/add-address", authCheck, addAddress);
+router.get("/users/get-address", authCheck, getAddress);
+router.post("/users/remove-address", authCheck, removeAddress);
+
 router.get("/users/:_id", readUser);
 
 module.exports = router;

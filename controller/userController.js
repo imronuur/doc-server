@@ -146,3 +146,42 @@ exports.saveAddress = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+
+exports.addAddress = async (req, res) => {
+  try {
+    const { address, email } = req.body.user;
+
+    await Users.findOneAndUpdate(
+      { email: email },
+      { $addToSet: { address } }
+    ).exec();
+
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.getAddress = async (req, res) => {
+  try {
+    const { email } = req.user;
+    console.log(email);
+    const addresses = await Users.findOne({ email }).select("address").exec();
+    res.json(addresses);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.removeAddress = async (req, res) => {
+  try {
+    const { _id, email } = req.body.user;
+    await Users.findOneAndUpdate(
+      { email },
+      { $pull: { address: { _id: _id } } }
+    ).exec();
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
