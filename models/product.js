@@ -44,7 +44,7 @@ const productSchema = new mongoose.Schema(
         ref: "Sub",
       },
     ],
-    quantity: Number,
+    available: Number,
     sold: {
       type: Number,
       default: 0,
@@ -56,7 +56,12 @@ const productSchema = new mongoose.Schema(
       type: String,
       enum: [],
     },
-    size: [],
+    size: [
+      {
+        sizeNo: String,
+        sizePrice: String,
+      },
+    ],
     review: [
       {
         rating: Number,

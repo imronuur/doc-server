@@ -18,9 +18,10 @@ const userSchema = new mongoose.Schema(
     gender: String,
     address: [
       {
-        address1: String,
-        state: String,
-        city: String,
+        addressType: String,
+        fullAddress: String,
+        addressPhone: String,
+        isDefault: Boolean,
       },
     ],
     wishlist: [{ type: ObjectId, ref: "Product" }],

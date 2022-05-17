@@ -10,7 +10,6 @@ const {
   getAddress,
   removeAddress,
   adminAddUser,
-  deleteMany,
 } = require("../controller/userController");
 
 const {

@@ -12,7 +12,7 @@ exports.createOrUpdateProduct = async (req, res) => {
       salePrice,
       category,
       subCategories,
-      quantity,
+      available,
       sold,
       images,
       inStock,
@@ -31,7 +31,7 @@ exports.createOrUpdateProduct = async (req, res) => {
         salePrice,
         category,
         subCategories,
-        quantity,
+        available,
         sold,
         images,
         inStock,
@@ -52,7 +52,7 @@ exports.createOrUpdateProduct = async (req, res) => {
         salePrice,
         category,
         subCategories,
-        quantity,
+        available,
         sold,
         images,
         inStock,
@@ -70,7 +70,7 @@ exports.createOrUpdateProduct = async (req, res) => {
 
 exports.list = async (req, res) => {
   const { page } = req.query;
-  const LIMIT = 5;
+  const LIMIT = 100;
   const startIndex = Number(page) * LIMIT;
   const total = await Product.countDocuments({});
 
@@ -144,7 +144,7 @@ exports.bulkProduct = async (req, res) => {
       description,
       regularPrice,
       salePrice,
-      quantity,
+      available,
       brand,
       size,
     } = element;
@@ -155,7 +155,7 @@ exports.bulkProduct = async (req, res) => {
       description,
       regularPrice,
       salePrice,
-      quantity,
+      available,
       brand,
       size,
       images: [

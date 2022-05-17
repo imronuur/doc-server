@@ -17,7 +17,7 @@ exports.createOrder = async (req, res) => {
       return {
         updateOne: {
           filter: { _id: item.product },
-          update: { $inc: { quantity: -item.count, sold: +item.count } },
+          update: { $inc: { available: -item.count, sold: +item.count } },
         },
       };
     });
