@@ -1,8 +1,58 @@
 const cartRepository = require("../repos/cart");
 const Product = require("../models/product");
+const Cart = require("../models/cart");
+
+exports.saveUserCart = async (req, res) => {
+  try {
+    const { items, subTotal, total, cartUser, discount, shipping, cartId } =
+      req.body.cart;
+
+    const cart = await Cart.findOneAndUpdate(
+      { _id: cartId },
+      {
+        items,
+        subTotal,
+        total,
+        cartUser,
+        discount,
+        shipping,
+      },
+      { new: true }
+    );
+
+    if (cart) {
+      res.json(cart);
+    } else {
+      const newCart = await new Cart({
+        items,
+        subTotal: Number(subTotal),
+        total: Number(total),
+        cartUser,
+        discount,
+        shipping,
+      }).save();
+      res.json(newCart);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Create Crat failed");
+  }
+};
+
+exports.readUserCart = async (req, res) => {
+  const { cartId } = req.body;
+  try {
+    const cart = await Cart.find({ _id: cartId });
+    res.json({
+      cart,
+    });
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
 
 exports.addItemToCart = async (req, res) => {
-  const { productId, _id } = req.body.cartItem;
+  const { productId, _id, price } = req.body.cartItem;
   const quantity = Number.parseInt(req.body.cartItem.quantity);
   try {
     let cart = await cartRepository.getCart({ _id });
@@ -34,9 +84,8 @@ exports.addItemToCart = async (req, res) => {
       else if (indexFound !== -1) {
         cart.items[indexFound].quantity =
           cart.items[indexFound].quantity + quantity;
-        cart.items[indexFound].total =
-          cart.items[indexFound].quantity * productDetails.salePrice;
-        cart.items[indexFound].price = productDetails.salePrice;
+        cart.items[indexFound].total = cart.items[indexFound].quantity * price;
+        cart.items[indexFound].price = price;
         cart.subTotal = cart.items
           .map((item) => item.total)
           .reduce((acc, next) => acc + next);
@@ -46,8 +95,8 @@ exports.addItemToCart = async (req, res) => {
         cart.items.push({
           productId: productId,
           quantity: quantity,
-          price: productDetails.salePrice,
-          total: parseInt(productDetails.salePrice * quantity),
+          price: price,
+          total: parseInt(price * quantity),
         });
         cart.subTotal = cart.items
           .map((item) => item.total)
@@ -74,11 +123,11 @@ exports.addItemToCart = async (req, res) => {
           {
             productId: productId,
             quantity: quantity,
-            total: parseInt(productDetails.salePrice * quantity),
-            price: productDetails.salePrice,
+            total: parseInt(price * quantity),
+            price,
           },
         ],
-        subTotal: parseInt(productDetails.salePrice * quantity),
+        subTotal: parseInt(price * quantity),
         cartUser: _id,
       };
       cart = await cartRepository.addItem(cartData);

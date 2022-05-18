@@ -1,5 +1,6 @@
 const Users = require("../models/user");
 const { defaultAuth } = require("../firebase/");
+const cartRepository = require("../repos/cart");
 
 exports.getUsers = async (req, res) => {
   try {
@@ -41,7 +42,8 @@ exports.loginUser = async (req, res) => {
     const { authorization } = req.headers;
     const user = await Users.findOne({ email });
     if (user) {
-      res.json({ user, accessToken: authorization });
+      const cartId = await cartRepository.getCartId({ _id: user._id });
+      res.json({ user, accessToken: authorization, cartId });
     } else {
       res.status(401).json("User Not Found");
     }

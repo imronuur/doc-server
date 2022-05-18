@@ -17,10 +17,6 @@ let ItemSchema = new Schema(
       type: Number,
       required: true,
     },
-    total: {
-      type: Number,
-      required: true,
-    },
   },
   {
     timestamps: true,
@@ -34,6 +30,9 @@ const CartSchema = new Schema(
       default: 0,
       type: Number,
     },
+    discount: Number,
+    total: Number,
+    shipping: Number,
     totalAfterDiscount: Number,
     cartUser: { type: ObjectId, ref: "User" },
   },

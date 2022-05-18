@@ -8,6 +8,11 @@ exports.getCart = async ({ _id }) => {
   return cart;
 };
 
+exports.getCartId = async ({ _id }) => {
+  const cart = await Cart.findOne({ cartUser: _id }).select("_id");
+  return cart;
+};
+
 exports.addItem = async (payload) => {
   const newItem = await Cart.create(payload);
   return newItem;
