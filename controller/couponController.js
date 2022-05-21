@@ -1,4 +1,5 @@
 const Coupon = require("../models/coupon");
+const { isPast } = require("date-fns");
 
 exports.createOrUpdateCoupon = async (req, res) => {
   try {
@@ -61,5 +62,25 @@ exports.deleteMany = async (req, res) => {
     res.status(200).send({ message: "Deleted Many Coupon Codes!" });
   } catch (error) {
     res.status(400).send(error.message);
+  }
+};
+
+exports.applyCoupon = async (req, res) => {
+  try {
+    const { coupon } = req.body;
+    const validCoupon = await Coupon.findOne({ name: coupon }).exec();
+    console.log(validCoupon);
+    if (validCoupon) {
+      if (isPast(validCoupon.expiryDate)) {
+        res.status(406).json({ message: "Coupon Code Expired" });
+      } else {
+        res.json(validCoupon.discount);
+      }
+    } else {
+      res.status(500).send({ message: "Coupon code not found" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Create Coupon Code failed");
   }
 };

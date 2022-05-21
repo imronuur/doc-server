@@ -1,11 +1,11 @@
 const User = require("../models/user");
 
 exports.addToWishlist = async (req, res) => {
-  const { productId } = req.body;
+  const { _id } = req.body;
 
   await User.findOneAndUpdate(
     { email: req.user.email },
-    { $addToSet: { wishlist: productId } }
+    { $addToSet: { wishlist: _id } }
   ).exec();
 
   res.json({ ok: true });
@@ -21,10 +21,10 @@ exports.getWishlist = async (req, res) => {
 };
 
 exports.removeFromWishlist = async (req, res) => {
-  const { productId } = req.params;
+  const { _id } = req.params;
   await User.findOneAndUpdate(
     { email: req.user.email },
-    { $pull: { wishlist: productId } }
+    { $pull: { wishlist: _id } }
   ).exec();
 
   res.json({ ok: true });

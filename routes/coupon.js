@@ -8,6 +8,7 @@ const {
   createOrUpdateCoupon,
   remove,
   deleteMany,
+  applyCoupon,
 } = require("../controller/couponController");
 
 // Private APIs
@@ -30,6 +31,8 @@ router.post(
   checkPermissions("canDeleteMultiCoupons"),
   deleteMany
 );
-// router.post("/apply-coupon", applyCoupon);
+
+// User APIs
+router.post("/apply-coupon", applyCoupon);
 
 module.exports = router;

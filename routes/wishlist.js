@@ -10,6 +10,6 @@ const { authCheck } = require("../middleware/auth");
 
 router.post("/wishlist", authCheck, addToWishlist);
 router.get("/wishlists", authCheck, getWishlist);
-router.put("/wishlist/:productId", authCheck, removeFromWishlist);
+router.put("/wishlist/:_id", authCheck, removeFromWishlist);
 
 module.exports = router;
