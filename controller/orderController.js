@@ -52,11 +52,35 @@ exports.listAllOrders = async (req, res) => {
 
 exports.getUserOrders = async (req, res) => {
   try {
-    const userOrders = await Order.find({ orderBy: req.params._id })
+    const { _id } = req.body;
+
+    const { page } = req.query;
+    const LIMIT = 5;
+    const startIndex = Number(page) * LIMIT;
+    const total = await Order.countDocuments({ orderBy: _id });
+
+    const userOrders = await Order.find({ orderBy: _id })
+      .populate("products.product")
+      .sort({ createdAt: -1 })
+      .limit(LIMIT)
+      .skip(startIndex)
+      .exec();
+    res.json({
+      data: userOrders,
+      currentPage: Number(page),
+      numberOfPages: Math.ceil(total / LIMIT),
+    });
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+};
+exports.readUserOrder = async (req, res) => {
+  try {
+    const userOrder = await Order.findOne({ _id: req.params._id })
       .populate("products.product")
       .exec();
 
-    res.json(userOrders);
+    res.json(userOrder);
   } catch (error) {
     res.status(400).json(error.message);
   }

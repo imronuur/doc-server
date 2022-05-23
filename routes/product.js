@@ -66,9 +66,9 @@ router.get("/top-rated-products", listTopRatedProducts);
 // router.post("/products/search", searchFilters);
 router.post("/filter-products-by-name", handleNameSearch);
 router.post("/filter-products-by-category/", handleCategory);
-router.get("/filter-products-by-sub-category/:sub", handleSub);
+router.post("/filter-products-by-sub-category/", handleSub);
 router.get("/filter-products-by-price/", handlePrice);
-router.get("/filter-products-by-brand/:brand", handleBrand);
+router.post("/filter-products-by-brand", handleBrand);
 router.get("/filter-products-by-rating/:star", handleStar);
 
 module.exports = router;

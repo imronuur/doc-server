@@ -79,6 +79,7 @@ exports.list = async (req, res) => {
     .limit(LIMIT)
     .skip(startIndex)
     .populate("category")
+    .populate("brand")
     .populate("review.postedBy")
     .populate("subCategories")
     .exec();
@@ -285,8 +286,9 @@ exports.handleNameSearch = async (req, res) => {
 
 exports.handleCategory = async (req, res) => {
   const { category } = req.body;
+  const search = JSON.parse(category);
   try {
-    let products = await Product.find({ category })
+    let products = await Product.find({ category: search })
       .populate("category", "_id name")
       .populate("subCategories", "_id name")
       .populate("review.postedBy", "_id name")
@@ -299,6 +301,39 @@ exports.handleCategory = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+};
+
+exports.handleSub = async (req, res) => {
+  try {
+    const { sub } = req.body;
+    const products = await Product.find({ subCategories: sub })
+      .populate("category", "_id name")
+      .populate("subCategories", "_id name")
+      .populate("review.postedBy", "_id name")
+      .exec();
+
+    res.json({
+      data: products,
+      status: 200,
+    });
+    console.log({ "Products ================": products });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.handleBrand = async (req, res) => {
+  const { brand } = req.body;
+  const products = await Product.find({ brand })
+    .populate("category", "_id name")
+    .populate("subCategories", "_id name")
+    .populate("review.postedBy", "_id name")
+    .exec();
+
+  res.json({
+    data: products,
+    status: 200,
+  });
 };
 
 exports.handlePrice = async (req, res, price) => {
@@ -347,28 +382,8 @@ exports.handleStar = (req, res, stars) => {
     });
 };
 
-exports.handleSub = async (req, res, sub) => {
-  const products = await Product.find({ subCategories: sub })
-    .populate("category", "_id name")
-    .populate("subCategories", "_id name")
-    .populate("review.postedBy", "_id name")
-    .exec();
-
-  res.json(products);
-};
-
 const handleShipping = async (req, res, shipping) => {
   const products = await Product.find({ shipping })
-    .populate("category", "_id name")
-    .populate("subCategories", "_id name")
-    .populate("review.postedBy", "_id name")
-    .exec();
-
-  res.json(products);
-};
-
-exports.handleBrand = async (req, res, brand) => {
-  const products = await Product.find({ brand })
     .populate("category", "_id name")
     .populate("subCategories", "_id name")
     .populate("review.postedBy", "_id name")

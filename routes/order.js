@@ -7,14 +7,15 @@ const {
   updateOrderStatus,
   remove,
   deleteMany,
+  readUserOrder,
 } = require("../controller/orderController");
 
 const { authCheck, checkPermissions } = require("../middleware/auth");
 
 // User APIs
 router.post("/order", authCheck, createOrder);
-router.get("/my-orders", authCheck, getUserOrders);
-// router.post("/cash-order", authCheck, createCashOrder);
+router.post("/user-orders", authCheck, getUserOrders);
+router.get("/user-orders/:_id", authCheck, readUserOrder);
 
 // Private APIs
 router.get(

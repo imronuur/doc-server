@@ -52,10 +52,7 @@ const productSchema = new mongoose.Schema(
     images: [],
     inStock: Boolean,
     shipping: Boolean,
-    brand: {
-      type: String,
-      enum: [],
-    },
+    brand: { type: ObjectId, ref: "Brand" },
     size: [
       {
         sizeNo: String,
