@@ -14,6 +14,13 @@ const {
   listNewestProducts,
   listTopRatedProducts,
   productRating,
+  listRelated,
+  handleNameSearch,
+  handleCategory,
+  handlePrice,
+  handleStar,
+  handleSub,
+  handleBrand,
 } = require("../controller/productController");
 
 // Private APIs
@@ -50,9 +57,18 @@ router.post("/rate-product/:_id", authCheck, productRating);
 // Public APIs
 router.get("/products", list);
 router.get("/get-all-products", listAll);
+router.get("/get-related-products/:_id", listRelated);
 router.get("/product/:_id", read);
 router.get("/highest-discouted-products", listHighDiscountProducts);
 router.get("/newest-products", listNewestProducts);
 router.get("/top-rated-products", listTopRatedProducts);
+
+// router.post("/products/search", searchFilters);
+router.post("/filter-products-by-name", handleNameSearch);
+router.post("/filter-products-by-category/", handleCategory);
+router.get("/filter-products-by-sub-category/:sub", handleSub);
+router.get("/filter-products-by-price/", handlePrice);
+router.get("/filter-products-by-brand/:brand", handleBrand);
+router.get("/filter-products-by-rating/:star", handleStar);
 
 module.exports = router;
