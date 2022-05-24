@@ -18,7 +18,7 @@ const {
   handleNameSearch,
   handleCategory,
   handlePrice,
-  handleStar,
+  handleRating,
   handleSub,
   handleBrand,
 } = require("../controller/productController");
@@ -67,8 +67,8 @@ router.get("/top-rated-products", listTopRatedProducts);
 router.post("/filter-products-by-name", handleNameSearch);
 router.post("/filter-products-by-category/", handleCategory);
 router.post("/filter-products-by-sub-category/", handleSub);
-router.get("/filter-products-by-price/", handlePrice);
+router.post("/filter-products-by-price/", handlePrice);
 router.post("/filter-products-by-brand", handleBrand);
-router.get("/filter-products-by-rating/:star", handleStar);
+router.post("/filter-products-by-rating/", handleRating);
 
 module.exports = router;

@@ -65,14 +65,32 @@ exports.createOrUpdateUser = async (req, res) => {
     if (user) {
       res.json({ user, accessToken: authorization });
     } else {
-      const newUser = await new Users(req.user).save();
+      const newUser = await new Users({ name, email }).save();
       res.json({ user: newUser, accessToken: authorization });
     }
   } catch (error) {
+    console.log(error);
     res.status(400).json(error.message);
   }
 };
-
+exports.createUserProfile = async (req, res) => {
+  try {
+    const { _id, name, phone, dob } = req.body.user;
+    const user = await Users.findOneAndUpdate(
+      { _id },
+      { name, phone, dob },
+      { new: true }
+    );
+    if (user) {
+      res.json({ user });
+    } else {
+      res.status(500).json({ message: "User Not Found " });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
+};
 exports.deleteUser = async (req, res) => {
   const { email } = req.headers;
   const notAllowedToBeDeletedRoles = ["superAdmin", "admin"];

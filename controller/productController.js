@@ -336,12 +336,15 @@ exports.handleBrand = async (req, res) => {
   });
 };
 
-exports.handlePrice = async (req, res, price) => {
+exports.handlePrice = async (req, res) => {
+  const { price } = req.body;
+  const priceRange = JSON.parse(price);
+
   try {
     let products = await Product.find({
-      price: {
-        $gte: price[0],
-        $lte: price[1],
+      salePrice: {
+        $gte: priceRange[0],
+        $lte: priceRange[1],
       },
     })
       .populate("category", "_id name")
@@ -349,27 +352,33 @@ exports.handlePrice = async (req, res, price) => {
       .populate("review.postedBy", "_id name")
       .exec();
 
-    res.json(products);
+    res.json({
+      data: products,
+      status: 200,
+    });
   } catch (err) {
     console.log(err);
   }
 };
 
-exports.handleStar = (req, res, stars) => {
+exports.handleRating = (req, res) => {
+  const { rating } = req.body;
+  console.log(rating);
   Product.aggregate([
+    { $unwind: { path: "$review" } },
     {
       $project: {
         document: "$$ROOT",
-        // title: "$title",
         floorAverage: {
           $floor: { $avg: "$review.rating" }, // floor value of 3.33 will be 3
         },
       },
     },
-    { $match: { floorAverage: stars } },
+    { $match: { floorAverage: rating } },
   ])
-    .limit(12)
+    .limit(10)
     .exec((err, aggregates) => {
+      console.log(aggregates);
       if (err) console.log("AGGREGATE ERROR", err);
       Product.find({ _id: aggregates })
         .populate("category", "_id name")
@@ -377,7 +386,10 @@ exports.handleStar = (req, res, stars) => {
         .populate("review.postedBy", "_id name")
         .exec((err, products) => {
           if (err) console.log("PRODUCT AGGREGATE ERROR", err);
-          res.json(products);
+          res.json({
+            data: products,
+            status: 200,
+          });
         });
     });
 };

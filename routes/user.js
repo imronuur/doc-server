@@ -10,6 +10,7 @@ const {
   getAddress,
   removeAddress,
   adminAddUser,
+  createUserProfile,
 } = require("../controller/userController");
 
 const {
@@ -20,6 +21,7 @@ const {
 
 // User APIs
 router.post("/users", authCheck, createOrUpdateUser);
+router.post("/user-profile", authCheck, createUserProfile);
 
 // Admin APIs
 router.get("/users", authCheck, checkPermissions("canListUsers"), getUsers);
