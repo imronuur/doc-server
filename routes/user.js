@@ -2,7 +2,6 @@ const router = require("express").Router();
 
 const {
   getUsers,
-  readUser,
   createOrUpdateUser,
   deleteUser,
   loginUser,
@@ -46,7 +45,5 @@ router.post("/users/token-check", tokenCheck);
 router.post("/users/add-address", authCheck, addAddress);
 router.get("/users/get-address", authCheck, getAddress);
 router.post("/users/remove-address", authCheck, removeAddress);
-
-router.get("/users/:_id", readUser);
 
 module.exports = router;

@@ -73,6 +73,7 @@ exports.createOrUpdateUser = async (req, res) => {
     res.status(400).json(error.message);
   }
 };
+
 exports.createUserProfile = async (req, res) => {
   try {
     const { _id, name, phone, dob } = req.body.user;
@@ -91,6 +92,7 @@ exports.createUserProfile = async (req, res) => {
     res.status(400).json(error.message);
   }
 };
+
 exports.deleteUser = async (req, res) => {
   const { email } = req.headers;
   const notAllowedToBeDeletedRoles = ["superAdmin", "admin"];
@@ -150,18 +152,6 @@ exports.deleteMany = async (req, res) => {
   try {
     await Users.deleteMany({ _id: req.body.ids });
     res.status(200).send({ message: "Deleted Many Users!" });
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-};
-
-exports.saveAddress = async (req, res) => {
-  try {
-    const updatedAddress = await Users.findOneAndUpdate(
-      { email: req.user.email },
-      { address: req.body.address }
-    );
-    res.json(updatedAddress);
   } catch (error) {
     res.status(400).send(error.message);
   }
