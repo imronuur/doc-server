@@ -44,25 +44,26 @@ const productSchema = new mongoose.Schema(
         ref: "Sub",
       },
     ],
-    quantity: Number,
+    available: Number,
     sold: {
       type: Number,
       default: 0,
     },
     images: [],
     inStock: Boolean,
-    shipping: {
-      type: String,
-      enum: ["Yes", "No"],
-    },
-    brand: {
-      type: String,
-      enum: [],
-    },
-    size: String,
-    ratings: [
+    shipping: Boolean,
+    brand: { type: ObjectId, ref: "Brand" },
+    size: [
       {
-        star: Number,
+        sizeNo: String,
+        sizePrice: String,
+      },
+    ],
+    review: [
+      {
+        rating: Number,
+        comment: String,
+        date: Date,
         postedBy: { type: ObjectId, ref: "User" },
       },
     ],

@@ -12,10 +12,10 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
-    methods: ["POST", "GET"],
+    methods: ["POST", "GET", "DELETE", "PUT"],
   })
 );
-app.use(morgran("combined"));
+app.use(morgran("dev"));
 
 readdirSync(path.join(__dirname, "routes")).map((route) =>
   app.use("/api", require(path.join(__dirname, "routes/" + route)))

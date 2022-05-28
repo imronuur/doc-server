@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
 const { ObjectId } = mongoose.Schema;
 
 const orderSchema = new mongoose.Schema(
@@ -11,23 +10,26 @@ const orderSchema = new mongoose.Schema(
           ref: "Product",
         },
         count: Number,
-        color: String,
+        size: String,
+        price: Number,
       },
     ],
-    paymentIntent: {},
+    orderInfo: {},
     orderStatus: {
       type: String,
       default: "Not Processed",
       enum: [
         "Not Processed",
-        "Cash On Delivery",
-        "processing",
+        "Processing",
         "Dispatched",
         "Cancelled",
-        "Completed",
+        "Delivred",
       ],
     },
-    orderdBy: { type: ObjectId, ref: "User" },
+    orderBy: { type: ObjectId, ref: "User" },
+    orderTo: { type: ObjectId, ref: "Client" },
+    address: [],
+    paymentType: String,
   },
   { timestamps: true }
 );
