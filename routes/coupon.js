@@ -33,6 +33,6 @@ router.post(
 );
 
 // User APIs
-router.post("/apply-coupon", applyCoupon);
+router.post("/apply-coupon", authCheck, applyCoupon);
 
 module.exports = router;
