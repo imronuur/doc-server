@@ -44,7 +44,7 @@ router.post(
 router.get(
   "/clients-all",
   authCheck,
-  checkPermissions("canListClients"),
+
   listAllClients
 );
 
