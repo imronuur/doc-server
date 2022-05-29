@@ -2,16 +2,7 @@ const Offer = require("../models/superOffer");
 
 exports.createOrUpdateSuperOffer = async (req, res) => {
   try {
-    const {
-      _id,
-      title,
-      subTitle,
-      product,
-      price,
-      expiryDate,
-      createdDate,
-      image,
-    } = req.body.offer;
+    const { _id, title, subTitle, product } = req.body.offer;
 
     const offer = await Offer.findOneAndUpdate(
       { _id },
@@ -19,10 +10,6 @@ exports.createOrUpdateSuperOffer = async (req, res) => {
         title,
         subTitle,
         product,
-        price,
-        expiryDate,
-        createdDate,
-        image,
       },
       { new: true }
     );
