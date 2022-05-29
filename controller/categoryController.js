@@ -5,12 +5,13 @@ const slugify = require("slugify");
 
 exports.createOrUpdateCategory = async (req, res) => {
   try {
-    const { name, slug } = req.body.name;
+    const { name, slug, image } = req.body.category;
     const category = await Category.findOneAndUpdate(
       { slug },
       {
         slug: slugify(name),
         name,
+        image,
       },
       { new: true }
     );
@@ -20,6 +21,7 @@ exports.createOrUpdateCategory = async (req, res) => {
       const newCategory = await new Category({
         slug: slugify(name),
         name,
+        image,
       }).save();
       res.json(newCategory);
     }
