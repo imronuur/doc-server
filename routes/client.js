@@ -7,6 +7,7 @@ const {
   readClient,
   deleteClient,
   deleteMany,
+  listAllClients,
 } = require("../controller/clientController");
 
 // Private APIs
@@ -39,6 +40,12 @@ router.post(
   authCheck,
   checkPermissions("canDeleteMultiClients"),
   deleteMany
+);
+router.get(
+  "/clients-all",
+  authCheck,
+  checkPermissions("canListClients"),
+  listAllClients
 );
 
 module.exports = router;

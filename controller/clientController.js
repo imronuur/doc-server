@@ -68,3 +68,11 @@ exports.deleteMany = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+exports.listAllClients = async (req, res) => {
+  try {
+    const clients = await Client.find({});
+    res.json(clients);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
