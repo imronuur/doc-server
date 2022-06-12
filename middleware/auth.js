@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 // eslint-disable-next-line no-unused-vars
-const { defaultAuth } = require("../firebase/");
+const { defaultAuth } = require("../firebase/index");
 const Role = require("../models/role");
 const User = require("../models/user");
 
 exports.authCheck = async (req, res, next) => {
   const auth = req.headers.authorization;
+
   try {
     const user = await defaultAuth.verifyIdToken(auth);
     req.user = user;

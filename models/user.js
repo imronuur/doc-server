@@ -16,15 +16,6 @@ const userSchema = new mongoose.Schema(
     photo: String,
     dob: Date,
     gender: String,
-    address: [
-      {
-        addressType: String,
-        fullAddress: String,
-        addressPhone: String,
-        isDefault: Boolean,
-      },
-    ],
-    wishlist: [{ type: ObjectId, ref: "Product" }],
     phone: String,
     company: String,
   },

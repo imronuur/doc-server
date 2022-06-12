@@ -8,7 +8,7 @@ const article = new mongoose.Schema(
     description: { type: String, required: true },
     author: { type: String, required: true },
     content: { type: String, required: true },
-    image: { type: String, required: true },
+    cover: {},
     tags: { type: [String], required: true },
     publish: { type: Boolean, required: true },
     comments: { type: Boolean, required: true },

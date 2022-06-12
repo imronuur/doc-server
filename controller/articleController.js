@@ -9,7 +9,7 @@ exports.createOrUpdateArticles = async (req, res) => {
       description,
       author,
       content,
-      image,
+      cover,
       tags,
       publish,
       comments,
@@ -26,7 +26,7 @@ exports.createOrUpdateArticles = async (req, res) => {
         description,
         author,
         content,
-        image,
+        cover,
         tags,
         publish,
         comments,
@@ -58,6 +58,7 @@ exports.list = async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(LIMIT)
     .skip(startIndex)
+    .populate("userId")
     .exec();
 
   res.json({
@@ -68,7 +69,10 @@ exports.list = async (req, res) => {
 };
 
 exports.listAll = async (req, res) => {
-  const articles = await Article.find({}).sort({ createdAt: -1 }).exec();
+  const articles = await Article.find({})
+    .sort({ createdAt: -1 })
+    .populate("userId")
+    .exec();
   res.json(articles);
 };
 
@@ -85,7 +89,9 @@ exports.remove = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
-  const article = await Article.findOne({ _id: req.params._id }).exec();
+  const article = await Article.findOne({ _id: req.params._id })
+    .populate("userId")
+    .exec();
   res.json(article);
 };
 

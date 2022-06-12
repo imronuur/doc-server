@@ -13,7 +13,7 @@ const { authCheck } = require("../middleware/auth");
 
 // Private APIs
 router.post("/article", authCheck, createOrUpdateArticles);
-router.get("/article", authCheck, list);
+router.get("/article", list);
 router.delete(
   "/article/:_id",
   authCheck,
